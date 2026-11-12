@@ -1,0 +1,141 @@
+name: Playwright Trace Analysis (GHA)
+
+on:
+  workflow_dispatch:
+    inputs:
+      trace_path:
+        description: 'Path or URL to Playwright trace archive (ZIP or folder)'
+        required: true
+        default: 'test-results/trace.zip'
+      test_path:
+        description: 'Failing spec path (e.g. checkout/checkout.spec.ts)'
+        required: false
+        default: ''
+      environment:
+        description: 'Environment (production, staging, etc.)'
+        required: false
+        default: 'production'
+      llm_provider:
+        description: 'AI Model Provider (auto, openai, gemini, anthropic, ollama, mock)'
+        required: false
+        default: 'auto'
+      llm_model:
+        description: 'Specific AI Model name (e.g. gpt-4o, gemini-2.5-pro, claude-3-5-sonnet, llama3)'
+        required: false
+        default: ''
+      dedup_hours:
+        description: 'Deduplication reuse window in hours (0 to force re-analysis)'
+        required: false
+        default: '24'
+      loop_total:
+        description: 'Validator rerun total (e.g. 3)'
+        required: false
+        default: '3'
+      loop_failed:
+        description: 'Validator rerun failures (e.g. 3 = consistent, 1 = flaky, 0 = transient)'
+        required: false
+        default: '3'
+
+  workflow_call:
+    inputs:
+      trace_path:
+        type: string
+        required: true
+        description: 'Path or URL to trace.zip'
+      test_path:
+        type: string
+        required: false
+        default: ''
+      environment:
+        type: string
+        required: false
+        default: 'production'
+      llm_provider:
+        type: string
+        required: false
+        default: 'auto'
+      llm_model:
+        type: string
+        required: false
+        default: ''
+      dedup_hours:
+        type: string
+        required: false
+        default: '24'
+      loop_total:
+        type: string
+        required: false
+        default: '0'
+      loop_failed:
+        type: string
+        required: false
+        default: '0'
+    secrets:
+      OPENAI_API_KEY:
+        required: false
+      GEMINI_API_KEY:
+        required: false
+      ANTHROPIC_API_KEY:
+        required: false
+      SLACK_BOT_TOKEN:
+        required: false
+
+jobs:
+  analyze-trace:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci || npm install
+
+      - name: Run Playwright Trace Analysis
+        id: trace_analysis
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ENVIRONMENT: ${{ inputs.environment }}
+          LLM_PROVIDER: ${{ inputs.llm_provider }}
+          LLM_MODEL: ${{ inputs.llm_model }}
+          DEDUP_HOURS: ${{ inputs.dedup_hours }}
+          LOOP_TOTAL: ${{ inputs.loop_total }}
+          LOOP_FAILED: ${{ inputs.loop_failed }}
+          TEST_CODE_SHA: ${{ github.sha }}
+        run: |
+          node scripts/runner/run-pipeline.js \
+            --trace "${{ inputs.trace_path }}" \
+            --test "${{ inputs.test_path }}" \
+            --environment "${{ inputs.environment }}" \
+            --provider "${{ inputs.llm_provider }}" \
+            --model "${{ inputs.llm_model }}" \
+            --dedupHours "${{ inputs.dedup_hours }}" \
+            --loopTotal "${{ inputs.loop_total }}" \
+            --loopFailed "${{ inputs.loop_failed }}"
+
+      - name: Upload Analysis Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trace-analysis-report
+          path: |
+            work-artifacts/*/report.html
+            work-artifacts/*/analysis-result.json
+            work-artifacts/*/summary.md
+            work-artifacts/*/trace-out/screenshots/*
+          retention-days: 14
+

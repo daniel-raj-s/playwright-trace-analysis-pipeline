@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# Build & Runtime Artifacts
+work-artifacts/
+.trace-db-cache.json
+*.log
+
+# Excluded internal documentation & reference skills
+BUILD-FROM-SCRATCH.md
+e2e-investigate/
+
+# Test Temporary Outputs
+scripts/__tests__/tmp_*/
+
+# Environment & Secrets
+.env
+.env.*
+*.local
+
+# System & OS Files
+.DS_Store
+Thumbs.db

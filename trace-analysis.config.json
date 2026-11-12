@@ -1,0 +1,31 @@
+{
+  "project": {
+    "name": "Playwright Trace Analysis Pipeline",
+    "description": "Enterprise-ready autonomous E2E failure analyzer"
+  },
+  "llm": {
+    "defaultProvider": "auto",
+    "defaultModel": "",
+    "supportedProviders": ["openai", "gemini", "anthropic", "ollama", "mock"],
+    "maxTurns": 70,
+    "maxBudgetUsd": 7.00,
+    "timeoutSec": 1500
+  },
+  "git": {
+    "defaultBranch": "main"
+  },
+  "jira": {
+    "defaultProject": "QA",
+    "defaultIssueType": "Bug"
+  },
+  "dedup": {
+    "defaultHours": 24,
+    "exactMatchRequired": true
+  },
+  "notifications": {
+    "enableStepSummary": true,
+    "enableHtmlReport": true,
+    "enableSlackBlocks": true
+  }
+}
+

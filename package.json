@@ -1,0 +1,30 @@
+{
+  "name": "playwright-trace-analysis-pipeline",
+  "version": "1.0.0",
+  "description": "Autonomous Playwright Trace Analysis Pipeline for E2E Test Failures with Multi-AI Model Support",
+  "main": "scripts/runner/run-pipeline.js",
+  "bin": {
+    "trace-analyze": "scripts/runner/run-pipeline.js"
+  },
+  "scripts": {
+    "test": "node --test scripts/__tests__/*.test.js",
+    "analyze": "node scripts/runner/run-pipeline.js",
+    "denylist-check": "node scripts/llm/denylist-check.js"
+  },
+  "keywords": [
+    "playwright",
+    "trace-analysis",
+    "ai-agent",
+    "llm",
+    "github-actions",
+    "testing",
+    "e2e",
+    "qa-automation",
+    "root-cause-analysis"
+  ],
+  "author": "Daniel Raj S",
+  "license": "MIT",
+  "dependencies": {
+    "adm-zip": "^0.5.16"
+  }
+}
