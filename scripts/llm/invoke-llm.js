@@ -48,7 +48,7 @@ function createRawOutput(content, model, durationMs, numTurns = 1, costUsd = 0.0
 async function callOpenAI(prompt, systemPrompt, options) {
   const apiKey = options.apiKey || process.env.OPENAI_API_KEY;
   const baseUrl = options.baseUrl || process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1';
-  const model = options.model || process.env.LLM_MODEL || 'gpt-4o';
+  const model = options.model || process.env.LLM_MODEL || 'gpt-6';
 
   if (!apiKey && !options.baseUrl) {
     throw new Error('Missing OPENAI_API_KEY or OPENAI_BASE_URL');
@@ -96,7 +96,7 @@ async function callOpenAI(prompt, systemPrompt, options) {
  */
 async function callGemini(prompt, systemPrompt, options) {
   const apiKey = options.apiKey || process.env.GEMINI_API_KEY;
-  const model = options.model || process.env.LLM_MODEL || 'gemini-2.5-pro';
+  const model = options.model || process.env.LLM_MODEL || 'gemini-3.0-pro';
 
   if (!apiKey) {
     throw new Error('Missing GEMINI_API_KEY');
@@ -146,7 +146,7 @@ async function callGemini(prompt, systemPrompt, options) {
  */
 async function callAnthropic(prompt, systemPrompt, options) {
   const apiKey = options.apiKey || process.env.ANTHROPIC_API_KEY;
-  const model = options.model || process.env.LLM_MODEL || 'claude-3-5-sonnet-20241022';
+  const model = options.model || process.env.LLM_MODEL || 'claude-opus-5-5';
 
   if (!apiKey) {
     throw new Error('Missing ANTHROPIC_API_KEY');

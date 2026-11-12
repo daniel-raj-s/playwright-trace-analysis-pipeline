@@ -30,10 +30,10 @@ flowchart TD
 
     subgraph Intelligence["3. Multi-Model AI Analysis Engine"]
         H --> I["AI Model Adapter (invokeModel)"]
-        I --> J["OpenAI (GPT-4o)"]
-        I --> K["Anthropic (Claude 3.7 Sonnet)"]
-        I --> L["Google Gemini (2.5 Pro)"]
-        I --> M["Ollama (Local Llama 3)"]
+        I --> J["Anthropic (Claude Opus 5.5 / AWS Bedrock)"]
+        I --> K["OpenAI (GPT-6 / Reasoning Engine)"]
+        I --> L["Google Gemini (3.0 Pro)"]
+        I --> M["Ollama (DeepSeek-R1 / Qwen3-Coder)"]
         I --> N["Deterministic Offline Mock"]
         J & K & L & M & N --> O["LLM Stream Parser & Validator\n(JSON Sanitization + Stream Salvage)"]
     end
@@ -71,10 +71,10 @@ Follows a modular three-layer design:
 
 ### 3. 🌐 Universal Multi-AI Model Support
 - Pluggable adapter (`invoke-llm.js`) supporting:
-  - **OpenAI**: `gpt-4o`, `gpt-4o-mini`, `o1`, `o3-mini`
-  - **Google Gemini**: `gemini-2.5-pro`, `gemini-2.0-flash`
-  - **Anthropic Claude**: `claude-3-7-sonnet`, `claude-3-5-sonnet`
-  - **Ollama**: Local models (`llama3`, `deepseek-r1`, `qwen2.5-coder`) for air-gapped or private environments.
+  - **Anthropic Claude**: `claude-opus-5-5`, `claude-sonnet-4-5`, `claude-3-7-sonnet` (Direct API & AWS Bedrock)
+  - **OpenAI**: `gpt-6`, `gpt-5`, `o3`, `o4-mini`
+  - **Google Gemini**: `gemini-3.0-pro`, `gemini-2.5-pro`, `gemini-2.5-flash`
+  - **Ollama**: Local models (`deepseek-r1`, `qwen3-coder`, `llama3.3`) for air-gapped or private environments.
   - **Deterministic Mock**: Offline engine for CI verification without API credentials.
 
 ### 4. 🛡️ Robust Security & Safety Model
@@ -108,17 +108,17 @@ npm run denylist-check
 # Run with automatic AI provider detection (or offline mock if no keys are set)
 node scripts/runner/run-pipeline.js --trace path/to/trace.zip --test tests/checkout.spec.ts
 
+# With Anthropic Claude
+export ANTHROPIC_API_KEY="sk-ant-..."
+node scripts/runner/run-pipeline.js --trace path/to/trace.zip --provider anthropic --model claude-opus-5-5
+
 # With OpenAI
 export OPENAI_API_KEY="sk-..."
-node scripts/runner/run-pipeline.js --trace path/to/trace.zip --provider openai --model gpt-4o
+node scripts/runner/run-pipeline.js --trace path/to/trace.zip --provider openai --model gpt-6
 
 # With Google Gemini
 export GEMINI_API_KEY="AIza..."
-node scripts/runner/run-pipeline.js --trace path/to/trace.zip --provider gemini --model gemini-2.5-pro
-
-# With Anthropic Claude
-export ANTHROPIC_API_KEY="sk-ant-..."
-node scripts/runner/run-pipeline.js --trace path/to/trace.zip --provider anthropic --model claude-3-7-sonnet-20250219
+node scripts/runner/run-pipeline.js --trace path/to/trace.zip --provider gemini --model gemini-3.0-pro-20250219
 
 # With Local Ollama
 node scripts/runner/run-pipeline.js --trace path/to/trace.zip --provider ollama --model llama3
@@ -195,8 +195,8 @@ jobs:
           npm ci
           node scripts/runner/run-pipeline.js \
             --trace traces/trace.zip \
-            --provider openai \
-            --model gpt-4o \
+            --provider anthropic \
+            --model claude-opus-5-5 \
             --dedupHours 24
 
       - name: Upload Analysis Reports
@@ -235,9 +235,9 @@ Every analysis run produces a comprehensive suite of artifacts in `work-artifact
   "affectedComponent": "PaymentGatewayService",
   "chosenScreenshotFile": "trace0-page@a1b2c3d4-123456.png",
   "llmStats": {
-    "provider": "openai",
-    "model": "gpt-4o",
-    "duration_ms": 1420
+    "provider": "anthropic",
+    "model": "claude-opus-5-5",
+    "duration_ms": 1180
   }
 }
 ```

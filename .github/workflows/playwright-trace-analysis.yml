@@ -20,7 +20,7 @@ on:
         required: false
         default: 'auto'
       llm_model:
-        description: 'Specific AI Model name (e.g. gpt-4o, gemini-2.5-pro, claude-3-5-sonnet, llama3)'
+        description: 'Specific AI Model name (e.g. claude-opus-5-5, gpt-6, gemini-3.0-pro, deepseek-r1)'
         required: false
         default: ''
       dedup_hours:
